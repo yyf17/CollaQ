@@ -1,3 +1,42 @@
+## ## Installation instructions 环境安装
+### 0)下载程序包
+```
+git clone https://github.com/facebookresearch/CollaQ.git
+```
+### 1) create env ma
+```
+conda create -n ma --clone tf-attack-mov
+conda activate ma
+```
+### 2) 安装sacred smac pymarl
+```
+git submodule sync && git submodule update --init --recursive
+cd third_party/sacred
+git apply ../sacred.patch
+pip install -e .
+cd ../smac
+git apply ../smac.patch
+pip install -e .
+cd ../pymarl
+git apply ../pymarl.patch
+bash install_sc2.sh
+```
+### 3) Building up src folder for code
+```
+cd ../..
+cp -r third_party/pymarl/src .
+cp -r third_party/pymarl/3rdparty .
+cp src_code/config/* src/config/algs/
+cp src_code/controllers/* src/controllers/
+cp src_code/learners/* src/learners/
+cp src_code/modules/* src/modules/agents/
+
+```
+### 4) 测试
+```
+SC2PATH=.../pymarl/StarCraftII
+python src/main.py --config=qmix --env-config=sc2 with env_args.map_name=MMM2,
+```
 ## Overview
 We propose **CollaQ**, a novel way to decompose Q function for decentralized policy in multi-agent modeling. In StarCraft II Multi-Agent Challenge, CollaQ outperforms existing state-of-the-art techniques (i.e., QMIX, QTRAN, and VDN) by improving the win rate by 40% with the same number of samples. In the more challenging ad hoc team play setting (i.e., reweight/add/remove units without re-training or finetuning), CollaQ outperforms previous SoTA by over 30%. 
 
@@ -17,32 +56,6 @@ Please cite our arXiv [paper](https://arxiv.org/abs/2010.08531) if you use this 
 ```
 
 **Note**: We are using SC2.4.6.2 and all baselines are run by ourselves using this version of SC2.
-
-## Installation instructions
-```
-git clone git@github.com:facebookresearch/CollaQ.git
-```
-The requirements.txt file can be used to install the necessary packages into a virtual environment with python == 3.6.0 (not recomended).
-
-Install smac and sacred:
-```
-git submodule sync && git submodule update --init --recursive
-cd third_party/sacred
-git apply ../sacred.patch
-cd ../smac
-git apply ../smac.patch
-cd ../pymarl
-git apply ../pymarl.patch
-```
-Building up src folder for code
-```
-cd ../..
-cp -r third_party/pymarl/src .
-cp src_code/config/* src/config/algs/
-cp src_code/controllers/* src/controllers/
-cp src_code/learners/* src/learners/
-cp src_code/modules/* src/modules/agents/
-```
 
 
 
