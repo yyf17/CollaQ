@@ -92,7 +92,9 @@ class CateQLearner:
 			m_sample_out = th.stack(m_sample_out, dim=1)[:, :-1]
 
 		# Pick the Q-Values for the actions taken by each agent
+		print("mac_out:\n",mac_out)
 		chosen_action_qvals = th.gather(mac_out[:, :-1], dim=3, index=actions).squeeze(3)  # Remove the last dim
+		print("chosen_action_qvals:\n",chosen_action_qvals)
 		# clone 此处的梯度就断开了
 		# chosen_action_qvals = th.gather(mac_out[:, :-1].clone(), dim=3, index=actions).squeeze(3)  # Remove the last dim
 

@@ -45,7 +45,7 @@ python3 src/main.py --git-root=NDQ --config=tar_qmix --env-config=sc2 with env_a
 ------------------------------
 
 ## QMIX
-### [ ] 完成(x   ✓)
+### [ x ] 完成(x   ✓)
 python3 src/main.py --git-root=NDQ --config=qmix_smac --env-config=sc2 with env_args.map_name=2s3z, use_tensorboard=True --gpus=0,1,2
 ### [ ] 完成(x   ✓)
 python3 src/main.py --git-root=NDQ --config=qmix_smac --env-config=sc2 with env_args.map_name=5m_vs_6m, use_tensorboard=True --gpus=0,1,2

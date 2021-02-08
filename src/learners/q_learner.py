@@ -98,9 +98,10 @@ class QLearner:
             # self.target_mixer.eval()
         else:
             for t in range(batch.max_seq_length):
-                agent_outs = self.mac.forward(batch, t=t)
-                mac_out.append(agent_outs)
+                agent_outs = self.mac.forward(batch, t=t) #(bs,n,n_actions)
+                mac_out.append(agent_outs)          #[t,(bs,n,n_actions)]
             mac_out = th.stack(mac_out, dim=1)  # Concat over time
+            #(bs,t,n,n_actions), Q values of n_actions
 
         if self.args.git_root in ["AIQMIX"]:
             if 'imagine' in self.args.agent:
@@ -119,14 +120,16 @@ class QLearner:
                 mac_out = self.mac.forward(batch, t=None)
                 # Pick the Q-Values for the actions taken by each agent
                 chosen_action_qvals = th.gather(mac_out[:, :-1], dim=3, index=actions).squeeze(3)  # Remove the last dim
+                # (bs,t,n) Q value of an action
 
         else:
             # Pick the Q-Values for the actions taken by each agent
             chosen_action_qvals = th.gather(mac_out[:, :-1], dim=3, index=actions).squeeze(3)  # Remove the last dim
+            # (bs,t,n) Q value of an action
 
         # Calculate the Q-Values necessary for the target
         
-        self.target_mac.init_hidden(batch.batch_size)
+        self.target_mac.init_hidden(batch.batch_size) # (bs,n,hidden_size)
 
         if self.args.git_root in ["AIQMIX"]:
             target_mac_out = self.target_mac.forward(batch, t=None)
@@ -137,11 +140,12 @@ class QLearner:
 
             target_mac_out = []
             for t in range(batch.max_seq_length):
-                target_agent_outs = self.target_mac.forward(batch, t=t)
-                target_mac_out.append(target_agent_outs)
+                target_agent_outs = self.target_mac.forward(batch, t=t)   #(bs,n,n_actions)
+                target_mac_out.append(target_agent_outs)         #[t,(bs,n,n_actions)]
 
             # We don't need the first timesteps Q-Value estimate for calculating targets
             target_mac_out = th.stack(target_mac_out[1:], dim=1)  # Concat across time
+            #(bs,t,n,n_actions)
 
         # Mask out unavailable actions
         if self.args.git_root in ["ASN"]:
@@ -165,9 +169,12 @@ class QLearner:
                 mac_out_detach[avail_actions_targ == 0] = -9999999
             else:
                 mac_out_detach[avail_actions == 0] = -9999999
+                                # (bs,t,n,n_actions), discard t=0
             #----------------------------------------------------
-            cur_max_actions = mac_out_detach[:, 1:].max(dim=3, keepdim=True)[1]
+            cur_max_actions = mac_out_detach[:, 1:].max(dim=3, keepdim=True)[1]  # indices instead of values
+            # (bs,t,n,1)
             target_max_qvals = th.gather(target_mac_out, 3, cur_max_actions).squeeze(3)
+            # (bs,t,n,n_actions) ==> (bs,t,n,1) ==> (bs,t,n) max target-Q
         else:
             target_max_qvals = target_mac_out.max(dim=3)[0]
 
@@ -196,6 +203,7 @@ class QLearner:
 
             else:
                 chosen_action_qvals = self.mixer(chosen_action_qvals, batch["state"][:, :-1])
+                # (bs,t,1)
 
             target_max_qvals = self.target_mixer(target_max_qvals, batch["state"][:, 1:])
 
@@ -216,6 +224,7 @@ class QLearner:
 
         # Td-error
         td_error = (chosen_action_qvals - targets.detach())
+         # (bs,t,1)
 
         mask = mask.expand_as(td_error)
 

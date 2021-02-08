@@ -280,7 +280,7 @@ class ParallelRunner:
             # actions = self.mac.select_actions(self.batch, t_ep=self.t, t_env=self.t_env, bs=envs_not_terminated, test_mode=test_mode)
             # cpu_actions = actions.to("cpu").numpy()
 
-            if self.args.git_root in ["LICA","ASN","CollaQ","ROMA","QPLEX","AIQMIX"]:
+            if self.args.git_root in ["LICA","ASN","CollaQ","ROMA","QPLEX","AIQMIX","NDQ"]:
                 actions = self.mac.select_actions(self.batch, t_ep=self.t, t_env=self.t_env,  bs=envs_not_terminated, test_mode=test_mode)
                 cpu_actions = actions.to("cpu").numpy()
 
@@ -289,12 +289,7 @@ class ParallelRunner:
                 cpu_actions = actions.to("cpu").numpy()
                 cpu_roles = roles.to("cpu").numpy()
                 cpu_role_avail_actions = role_avail_actions.to("cpu").numpy()
-                self.batch.update({"role_avail_actions": cpu_role_avail_actions.tolist()}, ts=self.t)               
-
-            elif self.args.git_root in ["NDQ"]:
-                actions = self.mac.select_actions(self.batch, t_ep=self.t, t_env=self.t_env,  bs=envs_not_terminated, test_mode=test_mode,
-                                                thres=thres, prob=prob)
-                cpu_actions = actions.to("cpu").numpy()              
+                self.batch.update({"role_avail_actions": cpu_role_avail_actions.tolist()}, ts=self.t)                         
 
             else:
                 actions = self.mac.select_actions(self.batch, t_ep=self.t, t_env=self.t_env,  bs=envs_not_terminated, test_mode=test_mode, env=self.env)
@@ -556,7 +551,7 @@ def env_worker(remote, env_fn, entity_scheme=False, has_obs_alone=False):
         #        ('get_env_info', None)
         #  
         cmd, data = remote.recv()   #  error: ValueError: too many values to unpack (expected 2)
-        print('cmd',cmd)
+        # print('cmd',cmd)
         if cmd == "step":
             actions = data
             # Take a step in the environment
@@ -589,9 +584,9 @@ def env_worker(remote, env_fn, entity_scheme=False, has_obs_alone=False):
             #--------------------------------
 
         elif cmd == "reset":
-            print("reset")
+            # print("reset")
             #env.reset()
-            print(data)
+            # print(data)
             env.reset(**data) #TypeError: reset() argument after ** must be a mapping, not bool
             send_dict = {}
             if entity_scheme:
@@ -620,12 +615,12 @@ def env_worker(remote, env_fn, entity_scheme=False, has_obs_alone=False):
             #--------------------------------
 
         elif cmd == "close":
-            print("close")
+            # print("close")
             env.close()
             remote.close()
             break
         elif cmd == "get_env_info":
-            print("get_env_info")
+            # print("get_env_info")
             remote.send(env.get_env_info())
         elif cmd == "get_stats":
             remote.send(env.get_stats())
