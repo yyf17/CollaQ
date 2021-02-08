@@ -57,32 +57,32 @@ SC2PATH=.../pymarl/StarCraftII
 
 ### QMIX
 ```
-python src/main.py --config=qmix --env-config=sc2 with env_args.map_name=MMM2,
+python3 src/main.py --config=qmix --env-config=sc2 with env_args.map_name=MMM2,
 ```
 
 ### CollaQ
 ```
-python src/main.py --config=qmix_interactive_reg --env-config=sc2 with env_args.map_name=MMM2,
+python3 src/main.py --config=qmix_interactive_reg --env-config=sc2 with env_args.map_name=MMM2,
 ```
 
 ### CollaQ with Attn
 ```
-python src/main.py --config=qmix_interactive_reg_attn --env-config=sc2 with env_args.map_name=MMM2,
+python3 src/main.py --config=qmix_interactive_reg_attn --env-config=sc2 with env_args.map_name=MMM2,
 ```
 
-### CollaQ Removing Agents
+### CollaQ Removing Agents  memory cannot 
 ```
-python src/main.py --config=qmix_interactive_reg_attn --env-config=sc2 with env_args.map_name=29m_vs_30m,28m_vs_30m, obs_agent_id=False
-```
-
-### CollaQ Removing Agents
-```
-python src/main.py --config=qmix_interactive_reg_attn --env-config=sc2 with env_args.map_name=27m_vs_30m,28m_vs_30m, obs_agent_id=False
+python3 src/main.py --config=qmix_interactive_reg_attn --env-config=sc2 with env_args.map_name=29m_vs_30m,28m_vs_30m, obs_agent_id=False
 ```
 
-### CollaQ Swapping Agents
+### CollaQ Removing Agents   OSError: [Errno 12] Cannot allocate memory
 ```
-python src/main.py --config=qmix_interactive_reg_attn --env-config=sc2 with env_args.map_name=3s1z_vs_zg_easy, 1s3z_vs_zg_easy,2s2z_vs_zg_easy, obs_agent_id=False
+python3 src/main.py --config=qmix_interactive_reg_attn --env-config=sc2 with env_args.map_name=27m_vs_30m,28m_vs_30m, obs_agent_id=False
+```
+
+### CollaQ Swapping Agents   maps not find
+```
+python3 src/main.py --config=qmix_interactive_reg_attn --env-config=sc2 with env_args.map_name=3s1z_vs_zg_easy, 1s3z_vs_zg_easy,2s2z_vs_zg_easy, obs_agent_id=False
 ```
 
 They are all located in `src/config`.
@@ -93,7 +93,11 @@ All results will be stored in the `Results` folder.
 
 ### Watching Replay
 ```
-python src/main.py --config=qmix --env-config=sc2 with env_args.map_name=5m_vs_6m, evaluate=True checkpoint_path=results/models/5m_vs_6m/... save_replay=True
+python3 src/main.py --config=qmix --env-config=sc2 with env_args.map_name=5m_vs_6m, evaluate=True checkpoint_path=results/models/5m_vs_6m/... save_replay=True
+
+python3 src/main.py --config=qmix --env-config=sc2 with env_args.map_name=5m_vs_6m, evaluate=True checkpoint_path=results/models/5m_vs_6m/qmix__2021-01-10_18-58-15 save_replay=True
+python3 src/main.py --config=qmix --env-config=sc2 with env_args.map_name=5m_vs_6m, evaluate=True checkpoint_path=results/models/5m_vs_6m/qmix__2021-01-10_18-58-15 save_replay=True use_tensorboard=True
+python3 src/main.py --config=qmix --env-config=sc2 with env_args.map_name=5m_vs_6m, evaluate=True checkpoint_path=results/models/5m_vs_6m/qmix__2021-01-10_16-01-08 save_replay=True use_tensorboard=True
 ```
 
 ## Saving and loading learnt models
@@ -113,7 +117,8 @@ Learnt models can be loaded using the `checkpoint_path` parameter, after which t
 The saved replays can be watched by double-clicking on them or using the following command:
 
 ```shell
-python -m pysc2.bin.play --norender --rgb_minimap_size 0 --replay NAME.SC2Replay
+python3 -m pysc2.bin.play --norender --rgb_minimap_size 0 --replay NAME.SC2Replay
+python3 -m pysc2.bin.play --norender --rgb_minimap_size 0 --replay 5m_vs_6m_2021-01-11-07-58-45.SC2Replay
 ```
 
 **Note:** Replays cannot be watched using the Linux version of StarCraft II. Please use either the Mac or Windows version of the StarCraft II client.
@@ -125,3 +130,4 @@ Our vanilla RL algorithm is based on [PyMARL](https://github.com/oxwhirl/pymarl)
 ## License
 
 This code is under the CC-BY-NC 4.0 (Attribution-NonCommercial 4.0 International) license.
+
